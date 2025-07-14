@@ -42,7 +42,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 public class BlockRegistry extends Registry<Block> {
     private static final Gson GSON = new GsonBuilder().create();
-    public static final int MAX_INDEX = 2047;
+    public static final int MAX_INDEX = 65535;
 
     private final Map<String, Integer> indexMap;
     private int lastIndex = 0;

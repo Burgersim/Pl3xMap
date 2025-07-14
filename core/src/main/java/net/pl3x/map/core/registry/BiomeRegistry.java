@@ -42,7 +42,7 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 public class BiomeRegistry extends Registry<Biome> {
     private static final Gson GSON = new GsonBuilder().create();
-    public static final int MAX_INDEX = 511;
+    public static final int MAX_INDEX = 16383;
 
     private final Map<String, Integer> indexMap;
     private int lastIndex = 0;

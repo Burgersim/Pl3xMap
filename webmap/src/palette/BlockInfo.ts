@@ -2,7 +2,7 @@ import {Block} from "./Block";
 
 export class BlockInfo {
     public readonly BYTE_SIZE: number = 8;
-    public readonly INTEGER_BYTES: number = 4;
+    public readonly LONG_BYTES: number = 8;
 
     private readonly _data: Uint8Array;
 
@@ -15,13 +15,21 @@ export class BlockInfo {
     }
 
     getBlock(index: number): Block {
-        return new Block(this.getInt(12 + index * 4), this.minY);
+        return new Block(this.getLong(12 + index * 8), this.minY);
     }
 
     private getInt(position: number): number {
         let val: number = 0;
-        for (let i: number = 0; i < this.INTEGER_BYTES; i++) {
-            val |= (this._data[position + i] & 0xFF) << (this.BYTE_SIZE * ((this.INTEGER_BYTES - 1) - i));
+        for (let i: number = 0; i < 4; i++) {
+            val |= (this._data[position + i] & 0xFF) << (this.BYTE_SIZE * ((4 - 1) - i));
+        }
+        return val;
+    }
+
+    private getLong(position: number): bigint {
+        let val = 0n;
+        for (let i = 0; i < this.LONG_BYTES; i++) {
+            val |= BigInt(this._data[position + i] & 0xFF) << BigInt(this.BYTE_SIZE * ((this.LONG_BYTES - 1) - i));
         }
         return val;
     }

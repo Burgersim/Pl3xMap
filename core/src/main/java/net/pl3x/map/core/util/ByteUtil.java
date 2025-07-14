@@ -39,10 +39,26 @@ public class ByteUtil {
         return bytes;
     }
 
+    public static byte[] toBytes(long packed) {
+        byte[] bytes = new byte[Long.BYTES];
+        for (int i = 0; i < Long.BYTES; i++) {
+            bytes[i] = (byte) (packed >>> (Byte.SIZE * (Long.BYTES - 1 - i)));
+        }
+        return bytes;
+    }
+
     public static int getInt(ByteBuffer buffer, int index) {
         int value = 0;
         for (int i = 0; i < Integer.BYTES; i++) {
             value |= (buffer.get(index + i) & 0xFF) << (Byte.SIZE * (Integer.BYTES - 1 - i));
+        }
+        return value;
+    }
+
+    public static long getLong(ByteBuffer buffer, int index) {
+        long value = 0;
+        for (int i = 0; i < Long.BYTES; i++) {
+            value |= ((long) buffer.get(index + i) & 0xFFL) << (Byte.SIZE * (Long.BYTES - 1 - i));
         }
         return value;
     }
