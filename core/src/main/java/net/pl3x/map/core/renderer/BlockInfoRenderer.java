@@ -56,7 +56,7 @@ public class BlockInfoRenderer extends Renderer {
 
     @Override
     public void allocateData(Point region) {
-        this.byteBuffer = ByteBuffer.allocate(512 * 512 * 4 + 12);
+        this.byteBuffer = ByteBuffer.allocate(512 * 512 * 8 + 12);
         Path path = getWorld().getTilesDirectory()
                 .resolve(String.format(TileImage.DIR_PATH, 0, getKey()))
                 .resolve(String.format(TileImage.FILE_PATH, region.x(), region.z(), "pl3xmap.gz"));
@@ -122,9 +122,9 @@ public class BlockInfoRenderer extends Renderer {
                     for (int x = 0; x < 512; x += step) {
                         for (int z = 0; z < 512; z += step) {
                             int index = z * 512 + x;
-                            int packed = ByteUtil.getInt(this.byteBuffer, 12 + index * 4);
+                            long packed = ByteUtil.getLong(this.byteBuffer, 12 + index * 8);
                             int newIndex = (baseZ + (z / step)) * 512 + (baseX + (x / step));
-                            buffer.put(12 + newIndex * 4, ByteUtil.toBytes(packed));
+                            buffer.put(12 + newIndex * 8, ByteUtil.toBytes(packed));
                         }
                     }
 
@@ -167,12 +167,12 @@ public class BlockInfoRenderer extends Renderer {
         int blockIndex = block.getIndex() == -1 ? Blocks.AIR.getIndex() : block.getIndex();
         int biomeIndex = biome.index() == -1 ? Biome.DEFAULT.index() : biome.index();
 
-        // 11111111111111111111111111111111 - 32 bits - (4294967295)
-        // 11111111111                      - 11 bits - block (2047)
-        //            111111111             -  9 bits - biome (511)
-        //                     111111111111 - 12 bits - yPos  (4095)
-        int packed = ((blockIndex & 2047) << 21) | ((biomeIndex & 511) << 12) | (y & 4095);
+        // packed into 64 bits
+        // 1111111111111111                      - 16 bits - block (65535)
+        //                 1111111111111111      - 16 bits - biome (65535)
+        //                                 1111111111111111 - 16 bits - yPos (65535)
+        long packed = ((long) (blockIndex & 0xFFFF) << 32) | ((long) (biomeIndex & 0xFFFF) << 16) | (y & 0xFFFF);
         int index = (blockZ & 511) * 512 + (blockX & 511);
-        this.byteBuffer.put(12 + index * 4, ByteUtil.toBytes(packed));
+        this.byteBuffer.put(12 + index * 8, ByteUtil.toBytes(packed));
     }
 }
