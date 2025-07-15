@@ -4,10 +4,14 @@ export class Block {
     private readonly _yPos: number;
     private readonly _minY: number;
 
-    constructor(packed: number, minY: number) {
-        this._block = packed >>> 22;
-        this._biome = (packed & 0b0000000000_1111111111_000000000000) >>> 12;
-        this._yPos = packed & 0b0000000000_0000000000_111111111111;
+    constructor(packed: bigint, minY: number) {
+        // packed into 64 bits
+        // 1111111111111111                      - 16 bits - block (65535)
+        //                 1111111111111111      - 16 bits - biome (65535)
+        //                                 1111111111111111 - 16 bits - yPos (65535)
+        this._block = Number((packed >> 32n) & 0xFFFFn);
+        this._biome = Number((packed >> 16n) & 0xFFFFn);
+        this._yPos = Number(packed & 0xFFFFn);
         this._minY = minY;
     }
 

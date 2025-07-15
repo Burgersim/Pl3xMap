@@ -39,22 +39,24 @@ import net.pl3x.map.core.util.FileUtil;
 import net.pl3x.map.core.util.Mathf;
 import net.pl3x.map.core.world.Biome;
 import net.pl3x.map.core.world.Block;
+import net.pl3x.map.core.world.Blocks;
 import net.pl3x.map.core.world.Chunk;
 import net.pl3x.map.core.world.Region;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class BlockInfoRenderer extends Renderer {
-    private static final Map<@NotNull Path, @NotNull ReadWriteLock> FILE_LOCKS = new ConcurrentHashMap<>();
+    private static final Map<Path, ReadWriteLock> FILE_LOCKS = new ConcurrentHashMap<>();
 
     private ByteBuffer byteBuffer;
 
-    public BlockInfoRenderer(@NotNull RegionScanTask task, @NotNull Builder builder) {
+    public BlockInfoRenderer(RegionScanTask task, Builder builder) {
         super(task, builder);
     }
 
     @Override
-    public void allocateData(@NotNull Point region) {
-        this.byteBuffer = ByteBuffer.allocate(512 * 512 * 4 + 12);
+    public void allocateData(Point region) {
+        this.byteBuffer = ByteBuffer.allocate(512 * 512 * 8 + 12);
         Path path = getWorld().getTilesDirectory()
                 .resolve(String.format(TileImage.DIR_PATH, 0, getKey()))
                 .resolve(String.format(TileImage.FILE_PATH, region.x(), region.z(), "pl3xmap.gz"));
@@ -68,7 +70,7 @@ public class BlockInfoRenderer extends Renderer {
     }
 
     @Override
-    public void saveData(@NotNull Point region) {
+    public void saveData(Point region) {
         Path tilesDir = getWorld().getTilesDirectory();
         for (int zoom = 0; zoom <= getWorld().getConfig().ZOOM_MAX_OUT; zoom++) {
             Path dirPath = tilesDir.resolve(String.format(TileImage.DIR_PATH, zoom, getKey()));
@@ -120,9 +122,9 @@ public class BlockInfoRenderer extends Renderer {
                     for (int x = 0; x < 512; x += step) {
                         for (int z = 0; z < 512; z += step) {
                             int index = z * 512 + x;
-                            int packed = ByteUtil.getInt(this.byteBuffer, 12 + index * 4);
+                            long packed = ByteUtil.getLong(this.byteBuffer, 12 + index * 8);
                             int newIndex = (baseZ + (z / step)) * 512 + (baseX + (x / step));
-                            buffer.put(12 + newIndex * 4, ByteUtil.toBytes(packed));
+                            buffer.put(12 + newIndex * 8, ByteUtil.toBytes(packed));
                         }
                     }
 
@@ -143,7 +145,7 @@ public class BlockInfoRenderer extends Renderer {
     }
 
     @Override
-    public void scanData(@NotNull Region region) {
+    public void scanData(Region region) {
         this.byteBuffer.clear();
 
         this.byteBuffer.put(0, ByteUtil.toBytes(0x706C3378)); // pl3x
@@ -154,7 +156,7 @@ public class BlockInfoRenderer extends Renderer {
     }
 
     @Override
-    public void scanBlock(@NotNull Region region, @NotNull Chunk chunk, Chunk.@NotNull BlockData data, int blockX, int blockZ) {
+    public void scanBlock(Region region, Chunk chunk, Chunk.BlockData data, int blockX, int blockZ) {
         boolean fluid = data.getFluidState() != null;
 
         int y = (fluid ? data.getFluidY() : data.getBlockY()) - getWorld().getMinBuildHeight();
@@ -162,12 +164,15 @@ public class BlockInfoRenderer extends Renderer {
         Block block = (fluid ? data.getFluidState() : data.getBlockState()).getBlock();
         Biome biome = data.getBiome(region, blockX, blockZ);
 
-        // 11111111111111111111111111111111 - 32 bits - (4294967295)
-        // 1111111111                       - 10 bits - block (1023)
-        //           1111111111             - 10 bits - biome (1023)
-        //                     111111111111 - 12 bits - yPos  (4095)
-        int packed = ((block.getIndex() & 1023) << 22) | ((biome.index() & 1023) << 12) | (y & 4095);
+        int blockIndex = block.getIndex() == -1 ? Blocks.AIR.getIndex() : block.getIndex();
+        int biomeIndex = biome.index() == -1 ? Biome.DEFAULT.index() : biome.index();
+
+        // packed into 64 bits
+        // 1111111111111111                      - 16 bits - block (65535)
+        //                 1111111111111111      - 16 bits - biome (65535)
+        //                                 1111111111111111 - 16 bits - yPos (65535)
+        long packed = ((long) (blockIndex & 0xFFFF) << 32) | ((long) (biomeIndex & 0xFFFF) << 16) | (y & 0xFFFF);
         int index = (blockZ & 511) * 512 + (blockX & 511);
-        this.byteBuffer.put(12 + index * 4, ByteUtil.toBytes(packed));
+        this.byteBuffer.put(12 + index * 8, ByteUtil.toBytes(packed));
     }
 }
