@@ -184,7 +184,7 @@ public class Pl3xMapFabricServer extends Pl3xMap implements DedicatedServerModIn
 
     @Override
     public String getServerVersion() {
-        return SharedConstants.getCurrentVersion().name();
+        return SharedConstants.getCurrentVersion().getName();
     }
 
     @Override
@@ -213,7 +213,7 @@ public class Pl3xMapFabricServer extends Pl3xMap implements DedicatedServerModIn
     @Override
     public net.pl3x.map.core.world.@Nullable Block getFlower(World world, net.pl3x.map.core.world.Biome biome, int blockX, int blockY, int blockZ) {
         // https://github.com/Draradech/FlowerMap (CC0-1.0 license)
-        Biome nms = world.<ServerLevel>getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getValue(ResourceLocation.parse(biome.getKey()));
+        Biome nms = world.<ServerLevel>getLevel().registryAccess().registryOrThrow(Registries.BIOME).get(ResourceLocation.parse(biome.getKey()));
         if (nms == null) {
             return null;
         }
@@ -221,7 +221,7 @@ public class Pl3xMapFabricServer extends Pl3xMap implements DedicatedServerModIn
         if (flowers.isEmpty()) {
             return null;
         }
-        RandomPatchConfiguration config = (RandomPatchConfiguration) flowers.getFirst().config();
+        RandomPatchConfiguration config = (RandomPatchConfiguration) flowers.get(0).config();
         SimpleBlockConfiguration flower = (SimpleBlockConfiguration) config.feature().value().feature().value().config();
         Block block = flower.toPlace().getState(this.randomSource, new BlockPos(blockX, blockY, blockZ)).getBlock();
         return getBlockRegistry().get(BuiltInRegistries.BLOCK.getKey(block).toString());
@@ -229,7 +229,7 @@ public class Pl3xMapFabricServer extends Pl3xMap implements DedicatedServerModIn
 
     @Override
     protected void loadBlocks() {
-        Set<Map.Entry<ResourceKey<Block>, Block>> entries = this.server.registryAccess().lookupOrThrow(Registries.BLOCK).entrySet();
+        Set<Map.Entry<ResourceKey<Block>, Block>> entries = this.server.registryAccess().registryOrThrow(Registries.BLOCK).entrySet();
         for (Map.Entry<ResourceKey<Block>, Block> entry : entries) {
             String id = entry.getKey().location().toString();
             int color = entry.getValue().defaultMapColor().col;

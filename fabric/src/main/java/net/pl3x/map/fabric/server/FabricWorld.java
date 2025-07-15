@@ -57,7 +57,7 @@ public class FabricWorld extends World {
                 level.getSeed(),
                 Point.of(level.getLevelData().getSpawnPos().getX(), level.getLevelData().getSpawnPos().getZ()),
                 Type.get(level.dimension().location().toString()),
-                level.getChunkSource().getDataStorage().dataFolder.getParent().resolve("region")
+                level.getChunkSource().getDataStorage().dataFolder.toPath().getParent().resolve("region")
         );
         this.level = level;
 
@@ -68,7 +68,7 @@ public class FabricWorld extends World {
         init();
 
         // register biomes
-        Set<Map.Entry<ResourceKey<Biome>, Biome>> entries = level.registryAccess().lookupOrThrow(Registries.BIOME).entrySet();
+        Set<Map.Entry<ResourceKey<Biome>, Biome>> entries = level.registryAccess().registryOrThrow(Registries.BIOME).entrySet();
         for (Map.Entry<ResourceKey<Biome>, Biome> entry : entries) {
             String id = entry.getKey().location().toString();
             Biome biome = entry.getValue();
@@ -77,7 +77,7 @@ public class FabricWorld extends World {
             getBiomeRegistry().register(
                     id,
                     ColorsConfig.BIOME_COLORS.getOrDefault(id, 0),
-                    ColorsConfig.BIOME_DRY_FOLIAGE.getOrDefault(id, biome.getSpecialEffects().getDryFoliageColorOverride().orElse(Colors.getDefaultDryFoliageColor(temperature, humidity))),
+                    ColorsConfig.BIOME_DRY_FOLIAGE.getOrDefault(id, Colors.getDefaultDryFoliageColor(temperature, humidity)),
                     ColorsConfig.BIOME_FOLIAGE.getOrDefault(id, biome.getSpecialEffects().getFoliageColorOverride().orElse(Colors.getDefaultFoliageColor(temperature, humidity))),
                     ColorsConfig.BIOME_GRASS.getOrDefault(id, biome.getSpecialEffects().getGrassColorOverride().orElse(Colors.getDefaultGrassColor(temperature, humidity))),
                     ColorsConfig.BIOME_WATER.getOrDefault(id, biome.getSpecialEffects().getWaterColor()),
@@ -108,12 +108,12 @@ public class FabricWorld extends World {
 
     @Override
     public int getMinBuildHeight() {
-        return this.level.getMinY();
+        return this.level.getMinBuildHeight();
     }
 
     @Override
     public int getMaxBuildHeight() {
-        return this.level.getMaxY() + 1;
+        return this.level.getMaxBuildHeight();
     }
 
     @Override

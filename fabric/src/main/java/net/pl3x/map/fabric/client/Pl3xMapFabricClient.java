@@ -165,6 +165,6 @@ public class Pl3xMapFabricClient implements ClientModInitializer {
     }
 
     public void updateAllMapTextures() {
-        Minecraft.getInstance().getMapTextureManager().maps.values().forEach(tex -> ((MapInstance) tex).pl3xMap$updateImage());
+        Minecraft.getInstance().gameRenderer.getMapRenderer().maps.values().forEach(tex -> ((MapInstance) tex).pl3xMap$updateImage());
     }
 }
