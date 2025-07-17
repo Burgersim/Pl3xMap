@@ -46,7 +46,6 @@ import net.pl3x.map.core.configuration.PlayersLayerConfig;
 import net.pl3x.map.core.configuration.SpawnLayerConfig;
 import net.pl3x.map.core.configuration.WorldBorderLayerConfig;
 import net.pl3x.map.core.configuration.WorldConfig;
-import net.pl3x.map.core.configuration.MTRLayerConfig;
 import net.pl3x.map.core.httpd.LiveDataHandler;
 import net.pl3x.map.core.image.IconImage;
 import net.pl3x.map.core.log.Logger;
@@ -57,7 +56,6 @@ import net.pl3x.map.core.markers.layer.Layer;
 import net.pl3x.map.core.markers.layer.PlayersLayer;
 import net.pl3x.map.core.markers.layer.SpawnLayer;
 import net.pl3x.map.core.markers.layer.WorldBorderLayer;
-import net.pl3x.map.core.markers.layer.MTRLayer;
 import net.pl3x.map.core.player.Player;
 import net.pl3x.map.core.registry.BiomeRegistry;
 import net.pl3x.map.core.registry.Registry;
@@ -167,11 +165,6 @@ public abstract class World extends Keyed {
         if (SpawnLayerConfig.ENABLED) {
             Logger.debug("Registering spawn layer");
             getLayerRegistry().register(SpawnLayer.KEY, new SpawnLayer(this));
-        }
-
-        if (MTRLayerConfig.ENABLED && MTRLayer.hasData(this)) {
-            Logger.debug("Registering MTR layer");
-            getLayerRegistry().register(MTRLayer.KEY, new MTRLayer(this));
         }
 
         if (PlayersLayerConfig.ENABLED) {
