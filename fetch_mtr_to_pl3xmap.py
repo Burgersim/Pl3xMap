@@ -10,8 +10,7 @@ import os
 # Requirements:
 #   pip install requests
 # Usage:
-#   python fetch_mtr_to_pl3xmap.py --base-url https://host/mtr/data \
-#       -o mtr_markers.json -k mtr -l "MTR Transit"
+#   python fetch_mtr_to_pl3xmap.py --base-url https://host/mtr/data -o mtr_markers.json -k mtr -l "MTR Transit"
 # -----------------------------------------------------------------------------
 
 DIM_NAMES = ['overworld', 'the_nether', 'the_end']
