@@ -2,11 +2,13 @@ import {Settings} from "./settings/Settings";
 import {ControlManager} from "./control/ControlManager";
 import {PlayerManager} from "./player/PlayerManager";
 import {WorldManager} from "./world/WorldManager";
+import {World} from "./world/World";
 import {getJSON} from "./util/Util";
 import SidebarControl from "./control/SidebarControl";
 import Pl3xMapLeafletMap from "./map/Pl3xMapLeafletMap";
 import "./scss/styles.scss";
 import {Player} from "./player/Player";
+import MTRLayer from "./mtr/MTRLayer";
 
 window.onload = function (): void {
     window.pl3xmap = new Pl3xMap();
@@ -31,6 +33,7 @@ export class Pl3xMap {
 
     private _timestamp: number = (new Date()).getTime();
     private _timer: NodeJS.Timeout | undefined;
+    private _mtrLayer?: MTRLayer;
 
     constructor() {
         Pl3xMap._instance = this;
@@ -62,6 +65,14 @@ export class Pl3xMap {
             const promise: Promise<void> = this.worldManager.init(this._settings);
             this._eventSource = this.initSSE();
             this.update();
+
+            window.addEventListener('worldselected', (e: CustomEvent): void => {
+                this._mtrLayer?.unload();
+                const world = e.detail as World;
+                this._mtrLayer = new MTRLayer(world, 'mtr/');
+                this._mtrLayer.addTo(this.map);
+            });
+
             return promise;
         });
     }
