@@ -205,6 +205,9 @@ public final class Lang extends AbstractConfig {
     @Key("ui.layer.worldborder")
     public static String UI_LAYER_WORLDBORDER = "World Border";
 
+    @Key("ui.layer.mtr")
+    public static String UI_LAYER_MTR = "MTR";
+
     @Key("ui.title")
     public static String UI_TITLE = "Pl3xMap";
     @Key("ui.block-and-biome-lang-file")
