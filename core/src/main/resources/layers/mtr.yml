@@ -1,0 +1,4 @@
+settings:
+  enabled: false
+  layer:
+    update-interval: 30

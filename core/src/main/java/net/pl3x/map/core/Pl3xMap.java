@@ -42,6 +42,7 @@ import net.pl3x.map.core.configuration.Config;
 import net.pl3x.map.core.configuration.Lang;
 import net.pl3x.map.core.configuration.PlayersLayerConfig;
 import net.pl3x.map.core.configuration.SpawnLayerConfig;
+import net.pl3x.map.core.configuration.MtrLayerConfig;
 import net.pl3x.map.core.configuration.WorldBorderLayerConfig;
 import net.pl3x.map.core.event.EventRegistry;
 import net.pl3x.map.core.event.server.Pl3xMapDisabledEvent;
@@ -197,6 +198,7 @@ public abstract class Pl3xMap {
         ColorsConfig.reload();
         PlayersLayerConfig.reload();
         SpawnLayerConfig.reload();
+        MtrLayerConfig.reload();
         WorldBorderLayerConfig.reload();
 
         // initialize block registry

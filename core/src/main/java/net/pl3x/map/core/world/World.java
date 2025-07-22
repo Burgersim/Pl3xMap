@@ -44,6 +44,7 @@ import net.pl3x.map.core.Pl3xMap;
 import net.pl3x.map.core.configuration.Config;
 import net.pl3x.map.core.configuration.PlayersLayerConfig;
 import net.pl3x.map.core.configuration.SpawnLayerConfig;
+import net.pl3x.map.core.configuration.MtrLayerConfig;
 import net.pl3x.map.core.configuration.WorldBorderLayerConfig;
 import net.pl3x.map.core.configuration.WorldConfig;
 import net.pl3x.map.core.httpd.LiveDataHandler;
@@ -55,6 +56,7 @@ import net.pl3x.map.core.markers.layer.CustomLayer;
 import net.pl3x.map.core.markers.layer.Layer;
 import net.pl3x.map.core.markers.layer.PlayersLayer;
 import net.pl3x.map.core.markers.layer.SpawnLayer;
+import net.pl3x.map.core.markers.layer.MtrLayer;
 import net.pl3x.map.core.markers.layer.WorldBorderLayer;
 import net.pl3x.map.core.player.Player;
 import net.pl3x.map.core.registry.BiomeRegistry;
@@ -170,6 +172,11 @@ public abstract class World extends Keyed {
         if (PlayersLayerConfig.ENABLED) {
             Logger.debug("Registering player tracker layer");
             getLayerRegistry().register(PlayersLayer.KEY, new PlayersLayer(this));
+        }
+
+        if (MtrLayerConfig.ENABLED && (getType() == Type.OVERWORLD || getType() == Type.NETHER || getType() == Type.THE_END)) {
+            Logger.debug("Registering MTR layer");
+            getLayerRegistry().register(MtrLayer.KEY, new MtrLayer(this));
         }
 
         Logger.debug("Checking all region files");

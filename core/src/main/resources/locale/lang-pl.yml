@@ -108,6 +108,7 @@ ui:
     players: Gracze
     spawn: Spawn
     worldborder: Granica świata
+    mtr: MTR
   title: Pl3xMap
   block-and-biome-lang-file: pl_pl.json # webmap/public/lang/
   blockinfo:
