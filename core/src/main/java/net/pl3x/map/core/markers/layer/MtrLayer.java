@@ -102,10 +102,10 @@ public class MtrLayer extends WorldLayer {
     }
 
     private static List<Point> metroLegPoints(Point p1, Point p2) {
-        int x1 = (int) p1.getX();
-        int z1 = (int) p1.getZ();
-        int x2 = (int) p2.getX();
-        int z2 = (int) p2.getZ();
+        int x1 = p1.x();
+        int z1 = p1.z();
+        int x2 = p2.x();
+        int z2 = p2.z();
         int dx = x2 - x1;
         int dz = z2 - z1;
         int adx = Math.abs(dx);
@@ -124,10 +124,10 @@ public class MtrLayer extends WorldLayer {
         Point pB;
         if (adx > adz) {
             pA = Point.of(x1 + sx * halfX, z1);
-            pB = Point.of(pA.getX() + sx * diag, z1 + sz * diag);
+            pB = Point.of(pA.x() + sx * diag, z1 + sz * diag);
         } else {
             pA = Point.of(x1, z1 + sz * halfZ);
-            pB = Point.of(x1 + sx * diag, pA.getZ() + sz * diag);
+            pB = Point.of(x1 + sx * diag, pA.z() + sz * diag);
         }
         return List.of(p1, pA, pB, p2);
     }
